@@ -1,0 +1,214 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}LearningHub — Personalized Python Learning Platform{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Don't just give students resources. Give them a personalized Python learning journey with Personal Learning Memory and intelligent revision.{% endblock %}">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="site-navbar" aria-label="Main Navigation">
+    <div class="app-container navbar-inner">
+      
+      <!-- Brand Logo -->
+      <a href="{% if user.is_authenticated %}{% url 'progress:dashboard' %}{% else %}{% url 'core:landing' %}{% endif %}" class="brand-logo" id="nav-brand-logo">
+        <div class="brand-logo-icon">LH</div>
+        <span>LearningHub</span>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <ul class="nav-links">
+        {% if user.is_authenticated %}
+          <li>
+            <a href="{% url 'progress:dashboard' %}" class="nav-link-item {% if request.resolver_match.app_name == 'progress' and request.resolver_match.url_name == 'dashboard' %}active{% endif %}" id="nav-dashboard-link">
+              📊 Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'learning:path_overview' %}" class="nav-link-item {% if request.resolver_match.app_name == 'learning' %}active{% endif %}" id="nav-path-link">
+              🐍 Python Path
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'memory:memory_hub' %}" class="nav-link-item {% if request.resolver_match.app_name == 'memory' %}active{% endif %}" id="nav-memory-link">
+              🧠 My Learning Memory
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'progress:practice_list' %}" class="nav-link-item {% if request.resolver_match.url_name == 'practice_list' %}active{% endif %}" id="nav-practice-link">
+              💻 Practice
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'progress:revision_hub' %}" class="nav-link-item {% if request.resolver_match.url_name == 'revision_hub' %}active{% endif %}" id="nav-revision-link">
+              🔄 Revision
+              {% if nav_revision_badge > 0 %}
+                <span class="nav-badge">{{ nav_revision_badge }}</span>
+              {% endif %}
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'bootcamp:index' %}" class="nav-link-item {% if request.resolver_match.app_name == 'bootcamp' %}active{% endif %}" id="nav-bootcamp-link">
+              🚀 30-Day Bootcamp
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'guidance:home' %}" class="nav-link-item {% if request.resolver_match.app_name == 'guidance' %}active{% endif %}" id="nav-guidance-link">
+              🧭 Guidance
+            </a>
+          </li>
+        {% else %}
+          <li><a href="{% url 'core:landing' %}#journey" class="nav-link-item">Learning Journey</a></li>
+          <li><a href="{% url 'core:landing' %}#memory" class="nav-link-item">Personal Memory</a></li>
+          <li><a href="{% url 'learning:path_overview' %}" class="nav-link-item">Python Curriculum</a></li>
+          <li><a href="{% url 'bootcamp:index' %}" class="nav-link-item">30-Day Bootcamp</a></li>
+          <li><a href="{% url 'guidance:home' %}" class="nav-link-item">Mentor Guides</a></li>
+          <li><a href="{% url 'guidance:pricing_concept' %}" class="nav-link-item">Pro Mentorship</a></li>
+        {% endif %}
+      </ul>
+
+      <!-- Right Nav Actions -->
+      <div class="nav-actions">
+        <!-- Search trigger -->
+        <a href="{% url 'core:search' %}" class="btn-ghost btn-sm" title="Search topics & resources" id="nav-search-btn">
+          🔍
+        </a>
+
+        <!-- Dark/Light Theme Toggle -->
+        <button id="theme-toggle" class="theme-toggle-btn" title="Toggle dark/light theme">
+          🌙
+        </button>
+
+        {% if user.is_authenticated %}
+          <!-- User Streak -->
+          <div class="streak-pill" title="{{ user_profile.current_streak }} Day Study Streak!">
+            🔥 {{ user_profile.current_streak|default:"1" }}d Streak
+          </div>
+
+          <!-- AI Assistant Quick Launch -->
+          <a href="{% url 'ai_assistant:chat' %}" class="btn btn-sm btn-primary" id="nav-ai-btn">
+            ✨ Ask AI
+          </a>
+
+          <!-- User Menu Dropdown -->
+          <div class="user-menu-wrapper">
+            <button class="user-avatar-btn" id="user-menu-btn" aria-haspopup="true">
+              <div class="avatar-circle">
+                {{ user.username|make_list|first|upper }}
+              </div>
+              <span>{{ user.username }}</span>
+              <small>▼</small>
+            </button>
+            <div class="user-dropdown-menu" id="user-dropdown">
+              <div style="padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border-subtle); margin-bottom: 0.3rem;">
+                <div style="font-weight: 700; font-size: 0.88rem;">{{ user_profile.full_name|default:user.username }}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">{{ user.email|default:"Student" }}</div>
+              </div>
+              <a href="{% url 'accounts:profile' %}" class="dropdown-item">👤 Profile & Goals</a>
+              <a href="{% url 'learning:bookmarks_list' %}" class="dropdown-item">🔖 Saved Bookmarks</a>
+              <a href="{% url 'memory:doubts_list' %}" class="dropdown-item">
+                ❓ Doubts Log
+                {% if nav_doubts_badge > 0 %}<span class="badge badge-warning" style="margin-left:auto;">{{ nav_doubts_badge }}</span>{% endif %}
+              </a>
+              <a href="{% url 'memory:mistakes_list' %}" class="dropdown-item">⚠️ Mistakes Log</a>
+              <div class="dropdown-divider"></div>
+              {% if user.is_staff %}
+                <a href="/admin/" class="dropdown-item" target="_blank">⚙️ Django Admin</a>
+                <div class="dropdown-divider"></div>
+              {% endif %}
+              <a href="{% url 'accounts:logout' %}" class="dropdown-item" style="color: var(--accent-rose);">🚪 Logout</a>
+            </div>
+          </div>
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="btn btn-sm btn-ghost" id="nav-login-btn">Log In</a>
+          <a href="{% url 'accounts:register' %}" class="btn btn-sm btn-primary" id="nav-register-btn">Start Learning Free</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash Messages / Notifications -->
+  {% if messages %}
+    <div class="messages-container">
+      {% for message in messages %}
+        <div class="alert-message alert-{{ message.tags|default:'info' }}">
+          <span>{{ message }}</span>
+          <button class="alert-close" aria-label="Close message">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main Content Area -->
+  <main id="main-content" style="flex: 1;">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Master Footer -->
+  <footer class="site-footer">
+    <div class="app-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand-logo">
+            <div class="brand-logo-icon">LH</div>
+            <span>LearningHub</span>
+          </div>
+          <p>
+            The personalized Python learning platform for students. Don't just give students resources; give them a structured journey with Personal Learning Memory.
+          </p>
+          <div style="margin-top: 1rem; font-size: 0.82rem; color: var(--text-muted);">
+            Built with Python + Django for the AI & Vibe Coding Hackathon 2026.
+          </div>
+        </div>
+
+        <div class="footer-column">
+          <h4>Curriculum</h4>
+          <ul>
+            <li><a href="{% url 'learning:path_overview' %}">Python Master Path</a></li>
+            <li><a href="{% url 'bootcamp:index' %}">30-Day Bootcamp</a></li>
+            <li><a href="{% url 'progress:practice_list' %}">Practice Challenges</a></li>
+            <li><a href="{% url 'progress:revision_hub' %}">Smart Revision Engine</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h4>Memory & AI</h4>
+          <ul>
+            <li><a href="{% url 'memory:memory_hub' %}">Personal Learning Memory</a></li>
+            <li><a href="{% url 'memory:mistakes_list' %}">Mistake Tracker</a></li>
+            <li><a href="{% url 'memory:doubts_list' %}">Doubt Resolver</a></li>
+            <li><a href="{% url 'ai_assistant:chat' %}">AI Learning Assistant</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h4>Mentorship & Growth</h4>
+          <ul>
+            <li><a href="{% url 'guidance:home' %}">Mentor Guides Library</a></li>
+            <li><a href="{% url 'guidance:pricing_concept' %}">Pro Mentorship Concept</a></li>
+            <li><a href="{% url 'accounts:profile' %}">Learning Profile</a></li>
+            <li><a href="/admin/">Staff Admin</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 LearningHub. Open-source educational project for student mastery.</div>
+        <div>Free Resources + Structured Journey + Personal Memory = Lifelong Mastery.</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Core JavaScript -->
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

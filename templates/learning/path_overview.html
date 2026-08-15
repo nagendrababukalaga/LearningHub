@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Python Programming Master Path — LearningHub{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+
+  <!-- Path Header -->
+  <div style="text-align: center; max-width: 800px; margin: 0 auto 3rem;">
+    <div style="font-size: 0.82rem; font-weight: 800; color: var(--brand-primary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem;">
+      PRIMARY LEARNING TRACK
+    </div>
+    <h1 style="font-size: 2.5rem; margin-bottom: 0.75rem;">Python Programming Master Path</h1>
+    <p style="font-size: 1.1rem; color: var(--text-secondary);">
+      A structured 7-level journey designed to take you from foundational syntax to object-oriented engineering, error handling, REST APIs, and job readiness.
+    </p>
+  </div>
+
+  <!-- 7 Levels Timeline -->
+  <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+    {% for item in level_list %}
+      <div class="card" id="level-{{ item.level.level_number }}" style="border-radius: var(--radius-xl); padding: 2rem;">
+        
+        <!-- Level Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1.25rem;">
+          <div style="max-width: 700px;">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
+              <span class="badge badge-neutral" style="font-size: 0.8rem;">LEVEL {{ item.level.level_number }}</span>
+              <h2 style="font-size: 1.45rem;">{{ item.level.title }}</h2>
+            </div>
+            <p style="font-size: 0.92rem; color: var(--text-secondary);">{{ item.level.tagline }}</p>
+          </div>
+
+          <div style="text-align: right; min-width: 140px;">
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">
+              {{ item.completed_topics }} of {{ item.total_topics }} Completed
+            </div>
+            <div class="progress-bar-track" style="width: 140px;">
+              <div class="progress-bar-fill" style="width: {{ item.progress_pct }}%; {% if item.progress_pct == 100 %}background: var(--accent-emerald);{% endif %}"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Topics Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;">
+          {% for tdata in item.topics_data %}
+            <a href="{% url 'learning:topic_detail' tdata.topic.slug %}" class="card card-hover" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; border-color: {% if tdata.is_completed %}rgba(16, 185, 129, 0.4){% elif tdata.understanding == 'need_revision' %}rgba(245, 158, 11, 0.4){% else %}var(--border-subtle){% endif %};">
+              
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">
+                    L{{ item.level.level_number }}.{{ tdata.topic.order }}
+                  </span>
+                  <div>
+                    <span class="badge badge-{{ tdata.topic.difficulty }}">{{ tdata.topic.get_difficulty_display }}</span>
+                    {% if tdata.is_completed %}
+                      <span class="badge badge-beginner" style="margin-left: 0.25rem;">✓ Completed</span>
+                    {% elif tdata.understanding == 'need_revision' %}
+                      <span class="badge badge-warning" style="margin-left: 0.25rem;">⚠️ Revise</span>
+                    {% elif tdata.understanding == 'learning' %}
+                      <span class="badge badge-intermediate" style="margin-left: 0.25rem;">📖 Learning</span>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <h3 style="font-size: 1.05rem; margin-bottom: 0.35rem; color: var(--text-primary);">
+                  {{ tdata.topic.title }}
+                </h3>
+                <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  {{ tdata.topic.summary_content|truncatewords:20 }}
+                </p>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 0.65rem;">
+                <span>⏱️ {{ tdata.topic.estimated_minutes }} mins</span>
+                <span style="color: var(--brand-primary); font-weight: 600;">Study Topic →</span>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

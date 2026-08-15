@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ article.title }} — LearningHub Mentor Guidance{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 2.5rem; padding-bottom: 4rem; max-width: 860px;">
+
+  <!-- Breadcrumb -->
+  <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+    <a href="{% url 'guidance:home' %}">Mentor Guidance</a>
+    <span>›</span>
+    <span style="color: var(--text-primary); font-weight: 600;">{{ article.get_category_display }}</span>
+  </div>
+
+  <!-- Article Header -->
+  <div style="margin-bottom: 2.5rem;">
+    <span class="badge badge-intermediate" style="margin-bottom: 0.5rem;">{{ article.get_category_display }}</span>
+    <h1 style="font-size: 2.5rem; line-height: 1.2; margin-bottom: 1rem;">{{ article.title }}</h1>
+    
+    <div style="display: flex; align-items: center; gap: 1.25rem; font-size: 0.88rem; color: var(--text-muted);">
+      <div>✍️ {{ article.author_name }}</div>
+      <div>⏱️ {{ article.read_time_minutes }} min read</div>
+      <div>📅 {{ article.created_at|date:"M d, Y" }}</div>
+    </div>
+  </div>
+
+  <!-- Summary Lead Box -->
+  <div class="card" style="background: var(--bg-surface-subtle); border-left: 4px solid var(--brand-primary); padding: 1.25rem 1.5rem; margin-bottom: 2rem; font-size: 1.05rem; font-weight: 500; color: var(--text-primary);">
+    {{ article.summary }}
+  </div>
+
+  <!-- Full Content -->
+  <div class="topic-explanation" style="font-size: 1.05rem; line-height: 1.8;">
+    <div style="white-space: pre-line;">{{ article.content }}</div>
+  </div>
+
+  <!-- Actionable Rules Checklist -->
+  {% if article.actionable_rules %}
+    <div class="objectives-card" style="margin: 2.5rem 0; padding: 1.75rem;">
+      <h3 style="font-size: 1.15rem; color: var(--brand-primary); margin-bottom: 1rem;">
+        📋 Key Actionable Takeaways & Rules
+      </h3>
+      <ul class="objectives-list" style="gap: 0.65rem;">
+        {% for rule in article.get_rules_list %}
+          <li style="font-size: 0.95rem;">{{ rule }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <!-- Related Guides -->
+  <div style="border-top: 1px solid var(--border-subtle); padding-top: 2.5rem; margin-top: 3rem;">
+    <h3 style="font-size: 1.25rem; margin-bottom: 1.25rem;">More Mentorship Guides</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+      {% for rel in related_articles %}
+        <a href="{% url 'guidance:article_detail' rel.slug %}" class="card card-hover" style="padding: 1.25rem; text-decoration: none;">
+          <h4 style="font-size: 1rem; margin-bottom: 0.35rem; color: var(--text-primary);">{{ rel.title }}</h4>
+          <span style="font-size: 0.78rem; color: var(--brand-primary); font-weight: 600;">Read guide →</span>
+        </a>
+      {% empty %}
+        <a href="{% url 'guidance:home' %}" class="btn btn-outline">Explore All Guides →</a>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

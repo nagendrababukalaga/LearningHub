@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Personal Learning Memory Hub — LearningHub{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+
+  <!-- Hub Header -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2.5rem;">
+    <div>
+      <div style="font-size: 0.82rem; font-weight: 800; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem;">
+        STUDENT RECOGNITION & RETENTION
+      </div>
+      <h1 style="font-size: 2.25rem; margin-bottom: 0.5rem;">🧠 Personal Learning Memory Hub</h1>
+      <p style="font-size: 1rem; color: var(--text-secondary); max-width: 650px;">
+        Here are the mental models, analogies, and lessons you've recorded across your Python journey. LearningHub remembers these when recommending revisions.
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="{% url 'memory:doubts_list' %}" class="btn btn-outline">
+        ❓ Doubts Tracker
+      </a>
+      <a href="{% url 'memory:mistakes_list' %}" class="btn btn-outline">
+        ⚠️ Mistakes Tracker
+      </a>
+    </div>
+  </div>
+
+  <!-- Memory Cards Grid -->
+  {% if memories %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem;">
+      {% for mem in memories %}
+        <div class="card card-hover" style="border-radius: var(--radius-xl); padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <!-- Card Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
+              <span style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: var(--brand-primary);">
+                LEVEL {{ mem.topic.level.level_number }}: {{ mem.topic.title }}
+              </span>
+              <small style="font-size: 0.72rem; color: var(--text-muted);">
+                Updated {{ mem.updated_at|date:"M d, Y" }}
+              </small>
+            </div>
+
+            <!-- Stored Analogy -->
+            {% if mem.real_life_analogy %}
+              <div style="background: rgba(124, 58, 237, 0.08); border-left: 3px solid #7c3aed; padding: 0.85rem; border-radius: 6px; margin-bottom: 1rem;">
+                <strong style="font-size: 0.82rem; color: #7c3aed; display: block; margin-bottom: 0.2rem;">🌟 My Real-Life Analogy:</strong>
+                <p style="font-size: 0.88rem; color: var(--text-primary); font-style: italic;">
+                  "{{ mem.real_life_analogy }}"
+                </p>
+              </div>
+            {% endif %}
+
+            <!-- What I Understood -->
+            {% if mem.what_i_understood %}
+              <div style="margin-bottom: 0.85rem;">
+                <strong style="font-size: 0.82rem; color: var(--text-muted);">💡 Mental Model:</strong>
+                <p style="font-size: 0.88rem; color: var(--text-secondary); margin-top: 0.15rem;">
+                  {{ mem.what_i_understood }}
+                </p>
+              </div>
+            {% endif %}
+
+            <!-- What Confused Me -->
+            {% if mem.what_confused_me %}
+              <div style="margin-bottom: 0.85rem;">
+                <strong style="font-size: 0.82rem; color: var(--accent-rose);">⚠️ What Confused Me:</strong>
+                <p style="font-size: 0.86rem; color: var(--text-secondary); margin-top: 0.15rem;">
+                  {{ mem.what_confused_me }}
+                </p>
+              </div>
+            {% endif %}
+
+            <!-- Code Sandbox Snippet -->
+            {% if mem.my_code_example %}
+              <div class="code-viewer-block" style="margin: 0.75rem 0;">
+                <pre><code>{{ mem.my_code_example }}</code></pre>
+              </div>
+            {% endif %}
+          </div>
+
+          <div style="margin-top: 1.25rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+            <a href="{% url 'learning:topic_detail' mem.topic.slug %}#memory-section" class="btn btn-sm btn-ghost" style="font-size: 0.8rem;">
+              ✏️ Edit Memory
+            </a>
+            <a href="{% url 'learning:topic_detail' mem.topic.slug %}" class="btn btn-sm btn-primary" style="font-size: 0.8rem;">
+              Open Topic →
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
+      <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Your Personal Memory Hub is Empty</h2>
+      <p style="font-size: 0.95rem; color: var(--text-secondary); max-width: 480px; margin: 0 auto 1.5rem;">
+        When you study any Python topic, write your own mental models and analogies in the <strong>"My Learning Memory"</strong> tab. They will appear here for easy recall!
+      </p>
+      <a href="{% url 'learning:path_overview' %}" class="btn btn-primary">
+        Explore Python Path & Create Your First Memory →
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

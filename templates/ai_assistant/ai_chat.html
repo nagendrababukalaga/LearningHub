@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Learning Assistant — LearningHub{% endblock %}
+
+{% block extra_css %}
+<style>
+.ai-chat-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1.5rem;
+  height: calc(100vh - 160px);
+  min-height: 580px;
+  margin: 1.5rem 0 2rem;
+}
+
+.ai-sidebar {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ai-main-chat {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.ai-chat-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: var(--bg-surface-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ai-messages-list {
+  flex-grow: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ai-message-row {
+  display: flex;
+  width: 100%;
+}
+
+.ai-message-row.user {
+  justify-content: flex-end;
+}
+
+.ai-message-row.assistant {
+  justify-content: flex-start;
+}
+
+.ai-bubble {
+  max-width: 80%;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-lg);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.ai-bubble.user {
+  background-color: var(--brand-primary);
+  color: white;
+  border-bottom-right-radius: 2px;
+}
+
+.ai-bubble.assistant {
+  background-color: var(--bg-surface-subtle);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-bottom-left-radius: 2px;
+}
+
+.ai-bubble.assistant h2, .ai-bubble.assistant h3, .ai-bubble.assistant h4 {
+  margin: 0.75rem 0 0.35rem;
+  color: var(--text-primary);
+}
+
+.ai-bubble.assistant p {
+  margin-bottom: 0.6rem;
+  color: var(--text-secondary);
+}
+
+.ai-bubble.assistant ul, .ai-bubble.assistant ol {
+  margin: 0.5rem 0 0.75rem 1.25rem;
+}
+
+.ai-bubble.assistant li {
+  margin-bottom: 0.25rem;
+  color: var(--text-secondary);
+}
+
+.ai-quote {
+  border-left: 3px solid #7c3aed;
+  background: rgba(124, 58, 237, 0.08);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  margin: 0.75rem 0;
+  font-size: 0.88rem;
+}
+
+.ai-chat-input-area {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+  background-color: var(--bg-surface);
+}
+
+.ai-actions-bar {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.ai-action-pill {
+  background-color: var(--bg-surface-subtle);
+  border: 1px solid var(--border-subtle);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.ai-action-pill:hover {
+  background-color: var(--brand-primary-subtle);
+  color: var(--brand-primary);
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.typing-indicator span {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: var(--text-muted);
+  border-radius: 50%;
+  margin-right: 4px;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-6px); }
+}
+
+@media (max-width: 868px) {
+  .ai-chat-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+  
+  <div class="ai-chat-layout">
+    
+    <!-- Sidebar: Context & Topics -->
+    <div class="ai-sidebar">
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+          <div class="brand-logo-icon" style="background: linear-gradient(135deg, #7c3aed, #2563eb);">✨</div>
+          <div>
+            <h2 style="font-size: 1.15rem;">AI Assistant</h2>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Context-Aware Mentor</div>
+          </div>
+        </div>
+
+        <p style="font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+          The assistant automatically injects your <strong>Personal Learning Memory</strong>, <strong>logged mistakes</strong>, and <strong>active doubts</strong> for tailored explanations.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" for="ai-topic-select" style="font-size: 0.82rem;">Active Learning Context:</label>
+          <select id="ai-topic-select" class="form-select" style="font-size: 0.85rem;">
+            <option value="">General Python Questions</option>
+            {% for t in topics %}
+              <option value="{{ t.id }}" {% if selected_topic and selected_topic.id == t.id %}selected{% endif %}>
+                L{{ t.level.level_number }}: {{ t.title }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div style="background: var(--bg-surface-subtle); border-radius: var(--radius-md); padding: 0.85rem; font-size: 0.78rem; color: var(--text-secondary);">
+          💡 <strong>Offline & Resilient:</strong> Works seamlessly with or without external API keys using our intelligent Python educational engine.
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+        <a href="{% url 'progress:dashboard' %}" style="font-size: 0.82rem; color: var(--brand-primary); font-weight: 600;">
+          ← Return to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Chat Workspace -->
+    <div class="ai-main-chat">
+      
+      <div class="ai-chat-header">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.1rem;">💬</span>
+          <strong style="font-size: 0.95rem;">LearningHub AI Assistant</strong>
+        </div>
+        <span class="badge badge-beginner" style="font-size: 0.7rem;">● Ready</span>
+      </div>
+
+      <!-- Messages Thread -->
+      <div class="ai-messages-list" id="ai-messages-list">
+        <!-- Initial Welcome Message -->
+        <div class="ai-message-row assistant">
+          <div class="ai-bubble assistant">
+            <h4>👋 Hi {{ user.username }}! How can I help with Python today?</h4>
+            <p>
+              Select a topic from the left sidebar to connect your stored <strong>Personal Learning Memory</strong>, or click any of the action buttons below to begin!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input & Action Pills -->
+      <div class="ai-chat-input-area">
+        <!-- Action Pills -->
+        <div class="ai-actions-bar">
+          <button type="button" class="ai-action-pill" data-mode="simplify">💡 Simplify This Concept</button>
+          <button type="button" class="ai-action-pill" data-mode="analogy">🌟 Real-World Analogy</button>
+          <button type="button" class="ai-action-pill" data-mode="practice">🎯 2 Practice Challenges</button>
+          <button type="button" class="ai-action-pill" data-mode="debug">🛠️ Common Beginner Bugs</button>
+          <button type="button" class="ai-action-pill" data-mode="study_plan">⏱️ 15-Min Study Plan</button>
+        </div>
+
+        <form id="ai-chat-form" style="display: flex; gap: 0.5rem;">
+          <input type="text" id="ai-chat-input" class="form-input" placeholder="Ask a Python question or request an explanation..." style="font-size: 0.92rem; padding: 0.75rem 1rem;" required autocomplete="off">
+          <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.25rem;">
+            Send ✨
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/ai_chat.js' %}"></script>
+{% endblock %}

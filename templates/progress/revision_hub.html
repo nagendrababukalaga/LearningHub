@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Intelligent Revision Hub — LearningHub{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2.5rem;">
+    <div>
+      <div style="font-size: 0.82rem; font-weight: 800; color: var(--accent-amber); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem;">
+        SPACED RETENTION & MASTERY
+      </div>
+      <h1 style="font-size: 2.25rem; margin-bottom: 0.5rem;">🔄 Intelligent Revision Hub</h1>
+      <p style="font-size: 1rem; color: var(--text-secondary); max-width: 650px;">
+        LearningHub automatically computes priority scores for topics based on your logged mistakes, open doubts, understanding levels, and days since last review.
+      </p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 0.85rem 1.25rem; text-align: right;">
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Topics Flagged for Review</div>
+      <div style="font-size: 1.5rem; font-weight: 800; color: #d97706;">
+        {{ total_revision_count }} Topics
+      </div>
+    </div>
+  </div>
+
+  {% if recommendations %}
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      {% for rec in recommendations %}
+        <div class="card" style="border-radius: var(--radius-xl); padding: 1.75rem; border-left: 5px solid {% if rec.score >= 50 %}var(--accent-amber){% else %}var(--brand-primary){% endif %};">
+          
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <span class="badge badge-neutral">Level {{ rec.topic.level.level_number }}</span>
+                <span class="badge {% if rec.progress.understanding_level == 'need_revision' %}badge-warning{% else %}badge-intermediate{% endif %}">
+                  {{ rec.progress.get_understanding_level_display|default:"Needs Review" }}
+                </span>
+              </div>
+              <h2 style="font-size: 1.35rem; color: var(--text-primary);">{{ rec.topic.title }}</h2>
+            </div>
+
+            <div style="text-align: right;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Revision Priority</div>
+              <span class="badge badge-warning" style="font-size: 0.9rem; padding: 0.35rem 0.75rem;">
+                ★ Priority Score: {{ rec.score }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Reason Badges -->
+          <div style="background: var(--bg-surface-subtle); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem;">
+            <strong style="font-size: 0.82rem; color: var(--text-primary); display: block; margin-bottom: 0.4rem;">
+              🔍 Why LearningHub recommends revising this topic:
+            </strong>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.35rem;">
+              {% for reason in rec.reasons %}
+                <li style="font-size: 0.88rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
+                  <span style="color: #d97706;">•</span> {{ reason }}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+            <div style="font-size: 0.82rem; color: var(--text-muted);">
+              ⏱️ Estimated Review: 10–15 mins
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+              <a href="{% url 'ai_assistant:chat' %}?topic={{ rec.topic.id }}" class="btn btn-sm btn-outline">
+                ✨ Ask AI to Explain
+              </a>
+              <a href="{% url 'learning:topic_detail' rec.topic.slug %}" class="btn btn-sm btn-primary">
+                Start 10-Min Flash Revision →
+              </a>
+            </div>
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+      <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">No Topics Require Urgent Revision!</h2>
+      <p style="font-size: 0.95rem; color: var(--text-secondary); max-width: 500px; margin: 0 auto 1.5rem;">
+        You're completely up to date with your studies, have no unresolved doubts, and are mastering your current concepts.
+      </p>
+      <a href="{% url 'progress:dashboard' %}" class="btn btn-primary">
+        Return to Dashboard →
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

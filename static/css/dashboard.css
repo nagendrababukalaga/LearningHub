@@ -1,0 +1,288 @@
+/* ==========================================================================
+   LearningHub — Student Dashboard Styles
+   ========================================================================== */
+
+.dashboard-header {
+  margin: 2.5rem 0 2rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.dashboard-welcome h1 {
+  font-size: 2rem;
+  margin-bottom: 0.35rem;
+}
+
+.dashboard-welcome p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   Metrics Grid
+   -------------------------------------------------------------------------- */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.metric-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.metric-icon-blue { background-color: var(--brand-primary-subtle); color: var(--brand-primary); }
+.metric-icon-green { background-color: var(--accent-emerald-subtle); color: var(--accent-emerald); }
+.metric-icon-amber { background-color: var(--accent-amber-subtle); color: var(--accent-amber); }
+.metric-icon-rose { background-color: var(--accent-rose-subtle); color: var(--accent-rose); }
+
+.metric-content {
+  flex-grow: 1;
+}
+
+.metric-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.metric-value {
+  font-family: var(--font-heading);
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard Main Layout (Today Plan vs Side Panels)
+   -------------------------------------------------------------------------- */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 1.75fr 1fr;
+  gap: 2rem;
+  align-items: start;
+  margin-bottom: 3rem;
+}
+
+/* Today's Learning Plan Card */
+.today-plan-card {
+  background: linear-gradient(180deg, var(--bg-card), var(--bg-surface-subtle));
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-md);
+}
+
+.plan-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 1rem;
+}
+
+.plan-title-box h2 {
+  font-size: 1.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.plan-time-badge {
+  background-color: var(--brand-primary-subtle);
+  color: var(--brand-primary);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.plan-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.plan-step-item {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: all var(--transition-fast);
+}
+
+.plan-step-item:hover {
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.plan-step-item.completed {
+  opacity: 0.65;
+  background-color: var(--bg-surface-subtle);
+  border-color: var(--border-subtle);
+}
+
+.plan-step-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.step-phase-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.phase-learn { background-color: rgba(37, 99, 235, 0.15); color: #2563eb; }
+.phase-understand { background-color: rgba(139, 92, 246, 0.15); color: #7c3aed; }
+.phase-practice { background-color: rgba(16, 185, 129, 0.15); color: #059669; }
+.phase-review { background-color: rgba(245, 158, 11, 0.15); color: #d97706; }
+.phase-complete { background-color: rgba(6, 182, 212, 0.15); color: #0891b2; }
+
+.plan-step-info h4 {
+  font-size: 0.98rem;
+  margin-bottom: 0.2rem;
+}
+
+.plan-step-info p {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Personalized Revision Alert Box
+   -------------------------------------------------------------------------- */
+.revision-alert-box {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.02));
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.revision-alert-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #b45309;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+[data-theme="dark"] .revision-alert-header {
+  color: #fbbf24;
+}
+
+.revision-item-card {
+  background-color: var(--bg-card);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.revision-item-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.revision-reason-tag {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* --------------------------------------------------------------------------
+   Level Roadmap Accordion / Mini View
+   -------------------------------------------------------------------------- */
+.levels-mini-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.level-mini-item {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all var(--transition-fast);
+}
+
+.level-mini-item:hover {
+  border-color: var(--border-strong);
+}
+
+.level-mini-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.level-num-pill {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--bg-surface-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+}

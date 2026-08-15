@@ -1,0 +1,273 @@
+/* ==========================================================================
+   LearningHub — Topic Detail & Personal Learning Memory Styles
+   ========================================================================== */
+
+.topic-header {
+  margin: 2rem 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.topic-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.topic-title-area h1 {
+  font-size: 2.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.topic-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.topic-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* --------------------------------------------------------------------------
+   Topic Navigation Bar (Previous / Next / Completed)
+   -------------------------------------------------------------------------- */
+.topic-nav-bar {
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-prev-next {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   Topic Main Layout Grid
+   -------------------------------------------------------------------------- */
+.topic-layout-grid {
+  display: grid;
+  grid-template-columns: 1.65fr 1fr;
+  gap: 2rem;
+  align-items: start;
+  margin-bottom: 4rem;
+}
+
+/* --------------------------------------------------------------------------
+   Objectives & Explanation Typography
+   -------------------------------------------------------------------------- */
+.objectives-card {
+  background: linear-gradient(135deg, var(--brand-primary-subtle), transparent);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.objectives-card h3 {
+  font-size: 1.05rem;
+  color: var(--brand-primary);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.objectives-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.objectives-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+}
+
+.objectives-list li::before {
+  content: '✓';
+  color: var(--brand-primary);
+  font-weight: 800;
+}
+
+.topic-explanation {
+  font-size: 1.02rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+}
+
+.topic-explanation h3 {
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  margin: 1.75rem 0 0.75rem;
+}
+
+.topic-explanation p {
+  margin-bottom: 1rem;
+}
+
+.topic-explanation ul, .topic-explanation ol {
+  margin: 0.75rem 0 1.25rem 1.5rem;
+}
+
+.topic-explanation li {
+  margin-bottom: 0.4rem;
+}
+
+/* --------------------------------------------------------------------------
+   Personal Learning Memory Tab & Editor
+   -------------------------------------------------------------------------- */
+.memory-editor-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 5.5rem;
+}
+
+.memory-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.75rem;
+}
+
+.memory-header h3 {
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.memory-status-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.memory-field-group {
+  margin-bottom: 1.15rem;
+}
+
+.memory-field-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.3rem;
+}
+
+.memory-field-group .form-textarea {
+  min-height: 70px;
+  font-size: 0.9rem;
+}
+
+.memory-save-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   Resources List
+   -------------------------------------------------------------------------- */
+.resources-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1.25rem 0 2rem;
+}
+
+.resource-item-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: all var(--transition-fast);
+}
+
+.resource-item-card:hover {
+  border-color: var(--brand-primary);
+}
+
+.resource-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.resource-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Doubts & Mistakes Mini Log inside Topic
+   -------------------------------------------------------------------------- */
+.doubt-item, .mistake-item {
+  background-color: var(--bg-surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.65rem;
+}
+
+.doubt-resolved {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .topic-layout-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .memory-editor-card {
+    position: static;
+  }
+}

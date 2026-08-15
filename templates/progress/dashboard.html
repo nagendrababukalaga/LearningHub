@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard — LearningHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <div class="dashboard-welcome">
+      <h1>Welcome back, {{ user_profile.full_name|default:user.username }}! 👋</h1>
+      <p>
+        Goal: <strong>{{ user_profile.get_primary_goal_display }}</strong> • Target: <strong>{{ user_profile.daily_goal_minutes }} mins/day</strong>
+      </p>
+    </div>
+    <div class="dashboard-actions">
+      <a href="{% url 'learning:path_overview' %}" class="btn btn-outline">
+        🗺️ Full Roadmap
+      </a>
+      <a href="{% url 'ai_assistant:chat' %}" class="btn btn-primary">
+        ✨ Ask AI Assistant
+      </a>
+    </div>
+  </div>
+
+  <!-- Key Metrics Row -->
+  <div class="metrics-grid">
+    <!-- Metric 1: Overall Progress -->
+    <div class="metric-card">
+      <div class="metric-icon-box metric-icon-blue">📈</div>
+      <div class="metric-content">
+        <div class="metric-label">Python Progress</div>
+        <div class="metric-value">{{ stats.overall_progress_pct }}%</div>
+        <div class="progress-bar-track sm" style="margin-top: 0.4rem;">
+          <div class="progress-bar-fill" style="width: {{ stats.overall_progress_pct }}%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metric 2: Streak -->
+    <div class="metric-card">
+      <div class="metric-icon-box metric-icon-amber">🔥</div>
+      <div class="metric-content">
+        <div class="metric-label">Current Streak</div>
+        <div class="metric-value">{{ user_profile.current_streak }} Days</div>
+        <small style="font-size: 0.75rem; color: var(--text-muted);">Longest: {{ user_profile.longest_streak }} days</small>
+      </div>
+    </div>
+
+    <!-- Metric 3: Topics Mastered -->
+    <div class="metric-card">
+      <div class="metric-icon-box metric-icon-green">🎯</div>
+      <div class="metric-content">
+        <div class="metric-label">Topics Completed</div>
+        <div class="metric-value">{{ stats.completed_topics_count }} <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">/ {{ stats.total_topics }}</span></div>
+        <small style="font-size: 0.75rem; color: var(--accent-emerald);">{{ stats.strong_topics_count }} marked Strong</small>
+      </div>
+    </div>
+
+    <!-- Metric 4: Practice Problems Solved -->
+    <div class="metric-card">
+      <div class="metric-icon-box metric-icon-blue">💻</div>
+      <div class="metric-content">
+        <div class="metric-label">Practice Solved</div>
+        <div class="metric-value">{{ stats.solved_practice_count }} <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">/ {{ stats.total_practice_problems }}</span></div>
+        <small style="font-size: 0.75rem; color: var(--text-muted);">{{ stats.practice_progress_pct }}% completed</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Dashboard Grid -->
+  <div class="dashboard-layout">
+    
+    <!-- Left Column: Today's Action Plan -->
+    <div>
+      <div class="today-plan-card">
+        <div class="plan-header">
+          <div class="plan-title-box">
+            <h2>🎯 Today's Learning Plan</h2>
+            <div class="card-subtitle">Personalized action plan designed to eliminate decision fatigue.</div>
+          </div>
+          <div class="plan-time-badge">
+            ⏱️ ~{{ today_plan.total_time_minutes }} mins total
+          </div>
+        </div>
+
+        <div class="plan-steps-list">
+          {% for task in today_plan.tasks %}
+            <div class="plan-step-item">
+              <div class="plan-step-left">
+                <span class="step-phase-badge phase-{{ task.type }}">
+                  Step {{ task.step_number }}: {{ task.phase }}
+                </span>
+                <div class="plan-step-info">
+                  <h4>{{ task.title }}</h4>
+                  <p>{{ task.description }}</p>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0;">
+                <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">{{ task.estimated_minutes }}m</span>
+                <a href="{{ task.action_url }}" class="btn btn-sm btn-outline">
+                  Start →
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if today_plan.next_topic %}
+          <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+            <a href="{% url 'learning:topic_detail' today_plan.next_topic.slug %}" class="btn btn-primary btn-block" style="padding: 0.85rem;">
+              🚀 Continue Learning: {{ today_plan.next_topic.title }} →
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Quick Action Shortcuts -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.5rem;">
+        <a href="{% url 'memory:doubts_list' %}" class="card card-hover" style="padding: 1rem; text-align: center; text-decoration: none;">
+          <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">❓</div>
+          <div style="font-weight: 700; font-size: 0.88rem; color: var(--text-primary);">Record Doubt</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">{{ stats.open_doubts_count }} unresolved</div>
+        </a>
+
+        <a href="{% url 'memory:mistakes_list' %}" class="card card-hover" style="padding: 1rem; text-align: center; text-decoration: none;">
+          <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">⚠️</div>
+          <div style="font-weight: 700; font-size: 0.88rem; color: var(--text-primary);">Log Mistake</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">{{ stats.mistakes_count }} logged</div>
+        </a>
+
+        <a href="{% url 'memory:memory_hub' %}" class="card card-hover" style="padding: 1rem; text-align: center; text-decoration: none;">
+          <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">🧠</div>
+          <div style="font-weight: 700; font-size: 0.88rem; color: var(--text-primary);">My Memory Hub</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">{{ stats.memories_count }} captured</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Column: Revision Engine & Levels Summary -->
+    <div>
+      <!-- 1. Personalized Revision Box -->
+      {% if revision_items %}
+        <div class="revision-alert-box">
+          <div class="revision-alert-header">
+            <span>🔄</span>
+            <span>Topics Needing Revision ({{ revision_items|length }})</span>
+          </div>
+          <p style="font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 0.85rem;">
+            Surfaced automatically based on your understanding levels, logged mistakes, and active doubts.
+          </p>
+
+          {% for item in revision_items %}
+            <div class="revision-item-card">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div class="revision-item-title">{{ item.topic.title }}</div>
+                <span class="badge badge-warning" style="font-size: 0.68rem;">Score: {{ item.score }}</span>
+              </div>
+              <div class="revision-reason-tag">
+                <span>⚠️</span> {{ item.reasons.0 }}
+              </div>
+              <div style="margin-top: 0.5rem; text-align: right;">
+                <a href="{% url 'learning:topic_detail' item.topic.slug %}" class="btn btn-sm btn-outline" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                  10-min Revise →
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+
+          <div style="margin-top: 0.75rem; text-align: center;">
+            <a href="{% url 'progress:revision_hub' %}" style="font-size: 0.82rem; font-weight: 700; color: #b45309;">
+              View Full Revision Hub ({{ stats.need_revision_count }}) →
+            </a>
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- 2. Python Curriculum Levels Progress -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header" style="margin-bottom: 0.85rem;">
+          <div class="card-title" style="font-size: 1rem;">🗺️ Python Curriculum Levels</div>
+          <a href="{% url 'learning:path_overview' %}" style="font-size: 0.8rem; font-weight: 600;">View All</a>
+        </div>
+
+        <div class="levels-mini-list">
+          {% for lvl in levels_summary %}
+            <div class="level-mini-item">
+              <div class="level-mini-left">
+                <div class="level-num-pill">L{{ lvl.level.level_number }}</div>
+                <div>
+                  <div style="font-size: 0.86rem; font-weight: 700; color: var(--text-primary);">{{ lvl.level.title }}</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">{{ lvl.completed }} / {{ lvl.total }} topics</div>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 0.82rem; font-weight: 700; color: {% if lvl.pct == 100 %}var(--accent-emerald){% else %}var(--brand-primary){% endif %};">
+                  {{ lvl.pct }}%
+                </span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- 3. 30-Day Bootcamp Progress Widget -->
+      <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), transparent); border-color: rgba(16, 185, 129, 0.25);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <strong style="font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem;">
+            🚀 30-Day Python Bootcamp
+          </strong>
+          <span class="badge badge-beginner">{{ stats.completed_bootcamp_days }} / {{ stats.total_bootcamp_days }} Days</span>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+          Build daily momentum with structured coding assignments.
+        </p>
+        <div class="progress-bar-track sm" style="margin-bottom: 0.85rem;">
+          <div class="progress-bar-fill" style="width: {{ stats.bootcamp_progress_pct }}%; background: var(--accent-emerald);"></div>
+        </div>
+        <a href="{% url 'bootcamp:index' %}" class="btn btn-sm btn-outline btn-block">
+          Open Bootcamp Roadmap →
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}LearningHub — Learn Python With Direction, Not Confusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- ========================================================================
+     1. Hero Section
+     ======================================================================== -->
+<section class="landing-hero">
+  <div class="app-container">
+    <div class="hero-badge-tag">
+      ✨ The Personalized Python Learning Platform
+    </div>
+
+    <h1 class="hero-title">
+      Learn Python with <span style="color: var(--brand-primary);">direction</span>, not confusion.
+    </h1>
+
+    <p class="hero-subtitle">
+      Students don't need 500 more scattered video tutorials. They need a structured journey that answers <em>"What should I do today?"</em> and remembers how they learned.
+    </p>
+
+    <div class="hero-cta-group">
+      {% if user.is_authenticated %}
+        <a href="{% url 'progress:dashboard' %}" class="btn btn-lg btn-primary" id="hero-dashboard-btn">
+          Go to Student Dashboard →
+        </a>
+      {% else %}
+        <a href="{% url 'accounts:register' %}" class="btn btn-lg btn-primary" id="hero-start-btn">
+          Start Your Python Journey Free →
+        </a>
+        <a href="{% url 'accounts:login' %}" class="btn btn-lg btn-outline" id="hero-demo-btn">
+          Try Live Demo Account
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="hero-trust-bar">
+      <div class="trust-item">✓ 100% Free Core Curriculum</div>
+      <div class="trust-item">✓ 7 Progressive Levels</div>
+      <div class="trust-item">✓ Personal Learning Memory</div>
+      <div class="trust-item">✓ Intelligent Revision Engine</div>
+    </div>
+
+    <!-- Interactive Hero Preview Frame -->
+    <div class="hero-preview-frame" style="margin-top: 3.5rem;">
+      <div class="preview-frame-header">
+        <div class="window-dots">
+          <div class="window-dot red"></div>
+          <div class="window-dot yellow"></div>
+          <div class="window-dot green"></div>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">
+          learninghub.dev/dashboard/preview
+        </div>
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--accent-emerald);">● ACTIVE SESSION</div>
+      </div>
+      <div class="preview-frame-content">
+        <!-- Left: Today's Action Plan -->
+        <div>
+          <div style="font-size: 0.75rem; font-weight: 800; color: var(--brand-primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">
+            TODAY'S ACTION PLAN
+          </div>
+          <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem;">Level 2.2: for Loops & enumerate()</h3>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+            <div style="background: var(--bg-surface-subtle); padding: 0.6rem 0.85rem; border-radius: 6px; display: flex; justify-content: space-between;">
+              <span>📖 Study Core Concepts</span>
+              <strong>25 mins</strong>
+            </div>
+            <div style="background: var(--bg-surface-subtle); padding: 0.6rem 0.85rem; border-radius: 6px; display: flex; justify-content: space-between;">
+              <span>🧠 Formulate Personal Analogy</span>
+              <strong>10 mins</strong>
+            </div>
+            <div style="background: var(--bg-surface-subtle); padding: 0.6rem 0.85rem; border-radius: 6px; display: flex; justify-content: space-between;">
+              <span>💻 Solve Practice Challenge</span>
+              <strong>20 mins</strong>
+            </div>
+            <div style="background: var(--accent-amber-subtle); border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.6rem 0.85rem; border-radius: 6px; display: flex; justify-content: space-between; color: #b45309;">
+              <span>🔄 5-min Revision: Float Precision</span>
+              <strong>5 mins</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Personal Learning Memory Spotlight -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.25rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+            <span style="font-size: 0.75rem; font-weight: 800; color: #7c3aed; text-transform: uppercase;">MY LEARNING MEMORY</span>
+            <span style="font-size: 0.72rem; color: var(--accent-emerald); font-weight: 600;">✓ Synced</span>
+          </div>
+          <div style="font-size: 0.82rem; margin-bottom: 0.6rem;">
+            <strong style="color: var(--text-primary);">My Own Explanation:</strong>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.15rem;">
+              "enumerate() is like a numbered coat-check ticket: it gives you the coat (item) and the ticket number (index) at the same time."
+            </p>
+          </div>
+          <div style="font-size: 0.82rem; margin-bottom: 0.6rem;">
+            <strong style="color: var(--accent-rose);">Mistake I Made:</strong>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.15rem;">
+              "Forgot that enumerate start is 0 by default; use enumerate(list, start=1) for leaderboards."
+            </p>
+          </div>
+          <div style="font-size: 0.78rem; background: var(--bg-surface-subtle); padding: 0.4rem 0.6rem; border-radius: 4px; color: var(--text-muted);">
+            💡 Next time you revise loops, LearningHub reminds you of this exact mental model.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================================
+     2. The Student Problem vs LearningHub Solution
+     ======================================================================== -->
+<section class="section-problem-solution" id="problem">
+  <div class="app-container">
+    <div class="section-header">
+      <span class="section-tag">THE PROBLEM WE SOLVE</span>
+      <h2 class="section-title">Resource Overload is Paralyzing Students</h2>
+      <p class="section-desc">
+        YouTube and Google provide infinite content, but zero direction. Students spend hours deciding what to study instead of actually understanding concepts.
+      </p>
+    </div>
+
+    <div class="comparison-grid">
+      <!-- Old Way -->
+      <div class="comparison-card bad">
+        <div class="comparison-header">
+          <div class="comparison-icon">✕</div>
+          <div>
+            <h3 style="font-size: 1.15rem;">The Scattered Tutorial Trap</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">How students struggle today</p>
+          </div>
+        </div>
+        <ul class="comparison-list">
+          <li><span>❌</span> <strong>Decision Fatigue:</strong> 50 open browser tabs, not knowing what to learn first.</li>
+          <li><span>❌</span> <strong>Passive Watching:</strong> Binge-watching tutorials without writing independent code.</li>
+          <li><span>❌</span> <strong>Zero Retention:</strong> Forgetting syntax and data structures 3 days after watching.</li>
+          <li><span>❌</span> <strong>Repeated Mistakes:</strong> Making the same scope or syntax error without tracking why.</li>
+          <li><span>❌</span> <strong>No Continuous Context:</strong> Every revision feels like starting from scratch.</li>
+        </ul>
+      </div>
+
+      <!-- LearningHub Way -->
+      <div class="comparison-card good">
+        <div class="comparison-header">
+          <div class="comparison-icon">✓</div>
+          <div>
+            <h3 style="font-size: 1.15rem; color: var(--accent-emerald);">The LearningHub Closed Loop</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Structured, personalized mastery</p>
+          </div>
+        </div>
+        <ul class="comparison-list">
+          <li><span>✅</span> <strong>Daily Action Plan:</strong> Wake up and immediately know your 45-minute task.</li>
+          <li><span>✅</span> <strong>Personal Learning Memory:</strong> Save your own analogies, examples, and mental models.</li>
+          <li><span>✅</span> <strong>Mistake & Doubt Tracker:</strong> Capture why errors occurred and never repeat them.</li>
+          <li><span>✅</span> <strong>Rule-Based Revision:</strong> Intelligent reminders prioritize shaky concepts automatically.</li>
+          <li><span>✅</span> <strong>Context-Aware AI:</strong> AI explains concepts using your past memory and analogies.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================================
+     3. The 6-Step Learning Journey
+     ======================================================================== -->
+<section class="section-journey" id="journey">
+  <div class="app-container">
+    <div class="section-header">
+      <span class="section-tag">HOW IT WORKS</span>
+      <h2 class="section-title">The Complete Learning Journey</h2>
+      <p class="section-desc">
+        "Don't just give students resources. Give them a learning journey."
+      </p>
+    </div>
+
+    <div class="journey-loop-grid">
+      <div class="journey-step-card">
+        <span class="step-num-badge">1</span>
+        <h4>Choose Python Goal</h4>
+        <p style="font-size: 0.88rem; margin-top: 0.4rem;">Select beginner, internship prep, or software engineering track to tailor your daily pace.</p>
+      </div>
+
+      <div class="journey-step-card">
+        <span class="step-num-badge">2</span>
+        <h4>Follow 7-Level Path</h4>
+        <p style="font-size: 0.88rem; margin-top: 0.4rem;">Progress through curated, battle-tested Python topics with zero fluff or guessing.</p>
+      </div>
+
+      <div class="journey-step-card">
+        <span class="step-num-badge">3</span>
+        <h4>Today's Action Plan</h4>
+        <p style="font-size: 0.88rem; margin-top: 0.4rem;">A clear 5-step daily routine: Learn → Understand → Practice → Review → Complete.</p>
+      </div>
+
+      <div class="journey-step-card">
+        <span class="step-num-badge">4</span>
+        <h4>Record Personal Memory</h4>
+        <p style="font-size: 0.88rem; margin-top: 0.4rem;">Capture how YOU understood the concept using your own words and real-world analogies.</p>
+      </div>
+
+      <div class="journey-step-card">
+        <span class="step-num-badge">5</span>
+        <h4>Practice & Log Mistakes</h4>
+        <p style="font-size: 0.88rem; margin-top: 0.4rem;">Solve challenges, log syntax or logic bugs, and turn stumbling blocks into strengths.</p>
+      </div>
+
+      <div class="journey-step-card">
+        <span class="step-num-badge">6</span>
+        <h4>Smart Revision Engine</h4>
+        <p style="font-size: 0.88rem; margin-top: 0.4rem;">Rule-based reminders surface shaky topics right before you forget them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================================
+     4. Feature Spotlights: Memory & Revision
+     ======================================================================== -->
+<section class="section-features" id="memory">
+  <div class="app-container">
+    
+    <!-- Spotlight 1: Personal Learning Memory -->
+    <div class="spotlight-row">
+      <div class="spotlight-content">
+        <span class="section-tag" style="color: #7c3aed;">CORE DIFFERENTIATOR</span>
+        <h3>Personal Learning Memory</h3>
+        <p>
+          Normal platforms only show you their generic explanation. LearningHub remembers <strong>how you uniquely understood the topic</strong>.
+        </p>
+        <ul class="spotlight-check-list">
+          <li><span>💡</span> Record your own simplified mental model</li>
+          <li><span>🌟</span> Connect concepts to personal real-world analogies</li>
+          <li><span>🛠️</span> Log your custom code sandbox snippets</li>
+          <li><span>❓</span> Track unresolved doubts with solution notes</li>
+        </ul>
+        <a href="{% url 'accounts:register' %}" class="btn btn-primary">Try Personal Learning Memory Free</a>
+      </div>
+      <div class="spotlight-card-demo">
+        <div style="font-family: var(--font-mono); font-size: 0.82rem; color: #7c3aed; font-weight: 700; margin-bottom: 0.5rem;">
+          TOPIC: TUPLES VS LISTS
+        </div>
+        <div style="background: var(--bg-surface-subtle); padding: 1rem; border-radius: 8px; margin-bottom: 0.75rem; border-left: 3px solid #7c3aed;">
+          <strong>Student's Stored Analogy:</strong>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.2rem;">
+            "A list is a whiteboard you can erase anytime; a tuple is a printed contract sealed in stone."
+          </p>
+        </div>
+        <div style="background: var(--bg-surface-subtle); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-emerald);">
+          <strong>What Helped Understand:</strong>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.2rem;">
+            "Tuples are immutable so Python can hash them. That's why tuples can be dict keys but lists can't!"
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spotlight 2: 30-Day Python Bootcamp -->
+    <div class="spotlight-row reverse">
+      <div class="spotlight-content">
+        <span class="section-tag" style="color: var(--accent-emerald);">STRUCTURED CONSISTENCY</span>
+        <h3>30-Day Intensive Python Bootcamp</h3>
+        <p>
+          Go from absolute zero to building practical software applications in 30 bite-sized, structured daily milestones.
+        </p>
+        <ul class="spotlight-check-list">
+          <li><span>📅</span> 30 structured daily assignments</li>
+          <li><span>🎯</span> Clear daily learning goals and starter code</li>
+          <li><span>📈</span> Milestone progress tracking and streak reinforcement</li>
+          <li><span>💼</span> Capstone project architecture for internship readiness</li>
+        </ul>
+        <a href="{% url 'bootcamp:index' %}" class="btn btn-outline">Explore 30-Day Bootcamp</a>
+      </div>
+      <div class="spotlight-card-demo">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <strong>Bootcamp Milestone: Week 2</strong>
+          <span class="badge badge-beginner">Day 11 of 30</span>
+        </div>
+        <div class="progress-bar-track lg" style="margin-bottom: 1.25rem;">
+          <div class="progress-bar-fill" style="width: 36%;"></div>
+        </div>
+        <div style="font-size: 0.88rem; color: var(--text-secondary);">
+          <strong>Today's Challenge:</strong> URL Slug Generator & String Slicing.<br>
+          <small style="color: var(--text-muted);">Estimated time: 60 mins • Includes starter code & test cases.</small>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========================================================================
+     5. Testimonials & Student Success Stories
+     ======================================================================== -->
+<section class="section-testimonials">
+  <div class="app-container">
+    <div class="section-header">
+      <span class="section-tag">STUDENT IMPACT</span>
+      <h2 class="section-title">Loved by Students Preparing for Tech Roles</h2>
+      <p class="section-desc">
+        See how structured direction and Personal Learning Memory transformed students' learning speed and confidence.
+      </p>
+    </div>
+
+    <div class="testimonials-grid">
+      {% for story in stories %}
+        <div class="testimonial-card">
+          <p class="testimonial-quote">"{{ story.quote }}"</p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background-color: {{ story.avatar_color }};">
+              {{ story.initials }}
+            </div>
+            <div class="author-info">
+              <h4>{{ story.name }}</h4>
+              <p>{{ story.role_or_college }}</p>
+              <div class="author-outcome">✓ {{ story.outcome }}</div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="testimonial-card">
+          <p class="testimonial-quote">"LearningHub eliminated my tutorial paralysis. The Personal Learning Memory feature changed how I study permanently."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background-color: #3b82f6;">PS</div>
+            <div class="author-info">
+              <h4>Priya Sharma</h4>
+              <p>2nd Year CS Student</p>
+              <div class="author-outcome">✓ Cracked Python Internship</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================================
+     6. Call to Action Banner
+     ======================================================================== -->
+<div class="app-container">
+  <section class="section-cta">
+    <h2>Stop wandering. Start mastering Python.</h2>
+    <p>
+      Join thousands of students moving from resource overload to structured, personalized progress today.
+    </p>
+    {% if user.is_authenticated %}
+      <a href="{% url 'progress:dashboard' %}" class="btn btn-lg btn-secondary">
+        Go to Your Dashboard →
+      </a>
+    {% else %}
+      <a href="{% url 'accounts:register' %}" class="btn btn-lg btn-secondary" id="cta-register-btn">
+        Create Your Free Account Now →
+      </a>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

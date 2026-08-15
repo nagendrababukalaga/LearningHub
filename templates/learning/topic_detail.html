@@ -1,0 +1,380 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ topic.title }} (Level {{ level.level_number }}) — LearningHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/topic.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+
+  <!-- Breadcrumb & Header -->
+  <div class="topic-header">
+    <div>
+      <div class="topic-breadcrumb">
+        <a href="{% url 'learning:path_overview' %}">Python Master Path</a>
+        <span>›</span>
+        <a href="{% url 'learning:path_overview' %}#level-{{ level.level_number }}">Level {{ level.level_number }}: {{ level.title }}</a>
+        <span>›</span>
+        <span style="color: var(--text-primary); font-weight: 600;">{{ topic.title }}</span>
+      </div>
+
+      <div class="topic-title-area">
+        <h1>
+          <span>{{ topic.title }}</span>
+          <span class="badge badge-{{ topic.difficulty }}">{{ topic.get_difficulty_display }}</span>
+        </h1>
+        <div class="topic-meta-row">
+          <div class="topic-meta-item">⏱️ Estimated: {{ topic.estimated_minutes }} mins</div>
+          <div class="topic-meta-item">📚 Level {{ level.level_number }} • Topic #{{ topic.order }}</div>
+          {% if progress.is_completed %}
+            <div class="topic-meta-item" style="color: var(--accent-emerald); font-weight: 700;">✓ Completed</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Header Action -->
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <a href="{% url 'ai_assistant:chat' %}?topic={{ topic.id }}" class="btn btn-outline" style="gap: 0.4rem;">
+        ✨ Ask AI About This
+      </a>
+      {% if user.is_authenticated %}
+        <button id="toggle-completion-btn" 
+                data-topic-id="{{ topic.id }}" 
+                data-completed="{{ progress.is_completed|yesno:'true,false' }}"
+                class="btn {% if progress.is_completed %}btn-success{% else %}btn-outline{% endif %}">
+          {% if progress.is_completed %}✓ Completed{% else %}Mark as Completed{% endif %}
+        </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Topic Navigation Bar -->
+  <div class="topic-nav-bar">
+    <div>
+      {% if prev_topic %}
+        <a href="{% url 'learning:topic_detail' prev_topic.slug %}" class="btn btn-sm btn-ghost">
+          ← Previous: {{ prev_topic.title }}
+        </a>
+      {% else %}
+        <span style="font-size: 0.82rem; color: var(--text-muted);">First Topic in Curriculum</span>
+      {% endif %}
+    </div>
+
+    <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">
+      Topic {{ topic.order }} of {{ level.topics.count }} in Level {{ level.level_number }}
+    </div>
+
+    <div>
+      {% if next_topic %}
+        <a href="{% url 'learning:topic_detail' next_topic.slug %}" class="btn btn-sm btn-primary">
+          Next: {{ next_topic.title }} →
+        </a>
+      {% else %}
+        <a href="{% url 'learning:path_overview' %}" class="btn btn-sm btn-success">
+          Complete Path Overview 🏆
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Main Split Layout -->
+  <div class="topic-layout-grid">
+    
+    <!-- Left Column: Syllabus & Explanation & Resources -->
+    <div>
+      
+      <!-- Objectives Card -->
+      <div class="objectives-card">
+        <h3>🎯 Learning Objectives</h3>
+        <ul class="objectives-list">
+          {% for obj in topic.get_objectives_list %}
+            <li>{{ obj }}</li>
+          {% empty %}
+            <li>Master the fundamental principles of {{ topic.title }}.</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Conceptual Explanation -->
+      <div class="topic-explanation">
+        <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-primary);">Concept Breakdown</h2>
+        <div style="white-space: pre-line;">{{ topic.summary_content }}</div>
+
+        <!-- Code Snippet -->
+        {% if topic.code_snippet %}
+          <div class="code-viewer-block">
+            <div class="code-header">
+              <span class="code-lang-tag">python</span>
+              <button class="code-copy-btn" title="Copy code">Copy</button>
+            </div>
+            <pre><code>{{ topic.code_snippet }}</code></pre>
+          </div>
+        {% endif %}
+
+        <!-- Key Takeaways -->
+        {% if topic.key_takeaways %}
+          <div class="card" style="background: var(--bg-surface-subtle); margin: 2rem 0; border-left: 4px solid var(--brand-primary);">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.6rem; color: var(--text-primary);">💡 Key Takeaways</h3>
+            <ul style="padding-left: 1.25rem; font-size: 0.92rem;">
+              {% for take in topic.get_takeaways_list %}
+                <li style="margin-bottom: 0.35rem;">{{ take }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Curated Resources Section -->
+      <div style="margin-top: 3rem; border-top: 1px solid var(--border-subtle); padding-top: 2rem;">
+        <h2 style="font-size: 1.35rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          📚 Curated High-Quality Resources
+        </h2>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Handpicked tutorials, docs, and cheat sheets for {{ topic.title }}.
+        </p>
+
+        <div class="resources-grid">
+          {% for res in resources %}
+            <div class="resource-item-card">
+              <div class="resource-info">
+                <div class="resource-icon">
+                  {% if res.resource_type == 'video' %}🎬
+                  {% elif res.resource_type == 'doc' %}📄
+                  {% elif res.resource_type == 'article' %}📰
+                  {% elif res.resource_type == 'practice' %}💻
+                  {% else %}📌{% endif %}
+                </div>
+                <div>
+                  <a href="{{ res.url }}" target="_blank" rel="noopener noreferrer" style="font-weight: 600; font-size: 0.95rem;">
+                    {{ res.title }} ↗
+                  </a>
+                  <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem;">
+                    {{ res.author_or_source }} • {{ res.duration_or_read_time }} • {{ res.get_resource_type_display }}
+                  </div>
+                </div>
+              </div>
+
+              {% if user.is_authenticated %}
+                <button class="btn btn-sm btn-ghost bookmark-toggle-btn {% if res.id in bookmarked_ids %}active{% endif %}" 
+                        data-resource-id="{{ res.id }}">
+                  {% if res.id in bookmarked_ids %}★ Saved{% else %}☆ Bookmark{% endif %}
+                </button>
+              {% endif %}
+            </div>
+          {% empty %}
+            <div style="color: var(--text-muted); font-size: 0.88rem;">No external resources added yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Practice Challenges Section -->
+      <div style="margin-top: 3rem; border-top: 1px solid var(--border-subtle); padding-top: 2rem;">
+        <h2 style="font-size: 1.35rem; margin-bottom: 0.5rem;">💻 Coding Practice</h2>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+          Reinforce your understanding by writing code.
+        </p>
+
+        {% for p_item in practice_data %}
+          <div class="card" style="margin-bottom: 1rem; border-left: 4px solid {% if p_item.user_attempt.status == 'solved' %}var(--accent-emerald){% else %}var(--brand-primary){% endif %};">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+              <h3 style="font-size: 1.05rem;">{{ p_item.problem.title }}</h3>
+              <span class="badge badge-{{ p_item.problem.difficulty }}">{{ p_item.problem.get_difficulty_display }}</span>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              {{ p_item.problem.prompt_description }}
+            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                {% if p_item.user_attempt.status == 'solved' %}
+                  <span class="badge badge-beginner">✓ Solved</span>
+                {% else %}
+                  <span class="badge badge-neutral">Not Solved Yet</span>
+                {% endif %}
+              </div>
+              <a href="{% url 'progress:practice_list' %}?topic={{ topic.id }}" class="btn btn-sm btn-primary">
+                Open in Practice Tracker →
+              </a>
+            </div>
+          </div>
+        {% empty %}
+          <p style="font-size: 0.85rem; color: var(--text-muted);">No practice problems for this topic yet.</p>
+        {% endfor %}
+      </div>
+
+    </div>
+
+    <!-- Right Column: Personal Learning Memory Editor & Doubts/Mistakes -->
+    <div>
+      
+      <!-- 1. Personal Learning Memory Editor -->
+      <div class="memory-editor-card" id="memory-section">
+        <div class="memory-header">
+          <h3>
+            <span>🧠</span>
+            <span>My Learning Memory</span>
+          </h3>
+          <span class="memory-status-tag" id="memory-status-indicator">
+            {% if memory.updated_at %}Last saved {{ memory.updated_at|timesince }} ago{% else %}Not saved yet{% endif %}
+          </span>
+        </div>
+
+        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5;">
+          Capture how <strong>YOU</strong> understand this topic. LearningHub will remember this context during daily revision and AI assistance.
+        </p>
+
+        {% if user.is_authenticated %}
+          <form id="personal-memory-form" data-topic-id="{{ topic.id }}">
+            {% csrf_token %}
+            
+            <div class="memory-field-group">
+              <label for="id_what_i_understood">💡 What I Understood (In My Own Words):</label>
+              <textarea class="form-textarea" name="what_i_understood" id="id_what_i_understood" placeholder="e.g. In Python, variables are labels on boxes in memory, not typed slots...">{{ memory.what_i_understood }}</textarea>
+            </div>
+
+            <div class="memory-field-group">
+              <label for="id_real_life_analogy">🌟 My Real-Life Analogy / Metaphor:</label>
+              <textarea class="form-textarea" name="real_life_analogy" id="id_real_life_analogy" placeholder="e.g. Tuples are like sealed packages; Lists are like open shopping carts...">{{ memory.real_life_analogy }}</textarea>
+            </div>
+
+            <div class="memory-field-group">
+              <label for="id_what_confused_me">⚠️ What Confused Me / Common Pitfall:</label>
+              <textarea class="form-textarea" name="what_confused_me" id="id_what_confused_me" placeholder="e.g. Initially forgot that range(5) stops at 4, not 5...">{{ memory.what_confused_me }}</textarea>
+            </div>
+
+            <div class="memory-field-group">
+              <label for="id_what_helped_me">✨ What Helped Me Click ("Aha!" Moment):</label>
+              <textarea class="form-textarea" name="what_helped_me" id="id_what_helped_me" placeholder="e.g. Visualizing the memory pointers on a whiteboard...">{{ memory.what_helped_me }}</textarea>
+            </div>
+
+            <div class="memory-save-actions">
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Auto-saves or click Save</span>
+              <button type="button" id="save-memory-btn" class="btn btn-sm btn-primary">
+                💾 Save Memory
+              </button>
+            </div>
+          </form>
+        {% else %}
+          <div style="background: var(--bg-surface-subtle); padding: 1.5rem; border-radius: var(--radius-md); text-align: center;">
+            <p style="font-size: 0.9rem; margin-bottom: 1rem;">
+              Log in to record your Personal Learning Memory, doubts, and mistakes for this topic.
+            </p>
+            <a href="{% url 'accounts:login' %}" class="btn btn-sm btn-primary">Log In Free</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- 2. Understanding Level Selector -->
+      {% if user.is_authenticated %}
+        <div class="card" style="margin-top: 1.5rem;">
+          <div class="card-title" style="font-size: 0.95rem; margin-bottom: 0.5rem;">
+            📊 My Current Understanding Level
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+            How confident do you feel with {{ topic.title }} right now?
+          </p>
+
+          <div class="understanding-selector" data-topic-id="{{ topic.id }}">
+            <div class="level-btn {% if progress.understanding_level == 'learning' %}active{% endif %}" data-level="learning">
+              <div class="level-btn-icon">📖</div>
+              <div class="level-btn-label">Learning</div>
+              <div class="level-btn-sub">Getting familiar</div>
+            </div>
+
+            <div class="level-btn {% if progress.understanding_level == 'need_revision' %}active{% endif %}" data-level="need_revision">
+              <div class="level-btn-icon">⚠️</div>
+              <div class="level-btn-label">Need Revision</div>
+              <div class="level-btn-sub">Shaky / Confused</div>
+            </div>
+
+            <div class="level-btn {% if progress.understanding_level == 'comfortable' %}active{% endif %}" data-level="comfortable">
+              <div class="level-btn-icon">👍</div>
+              <div class="level-btn-label">Comfortable</div>
+              <div class="level-btn-sub">Can write code</div>
+            </div>
+
+            <div class="level-btn {% if progress.understanding_level == 'strong' %}active{% endif %}" data-level="strong">
+              <div class="level-btn-icon">🌟</div>
+              <div class="level-btn-label">Strong</div>
+              <div class="level-btn-sub">Can teach it</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Doubts Log for This Topic -->
+        <div class="card" style="margin-top: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <div class="card-title" style="font-size: 0.95rem;">❓ Recorded Doubts ({{ doubts|length }})</div>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            {% for doubt in doubts %}
+              <div class="doubt-item {% if doubt.is_resolved %}doubt-resolved{% endif %}">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
+                  {{ doubt.doubt_text }}
+                </div>
+                {% if doubt.is_resolved and doubt.resolution_notes %}
+                  <div style="font-size: 0.78rem; color: var(--accent-emerald); margin-top: 0.25rem;">
+                    ✓ Answer: {{ doubt.resolution_notes }}
+                  </div>
+                {% endif %}
+              </div>
+            {% empty %}
+              <div style="font-size: 0.8rem; color: var(--text-muted);">No open doubts recorded for this topic.</div>
+            {% endfor %}
+          </div>
+
+          <!-- Quick Doubt Form -->
+          <form action="{% url 'memory:create_doubt' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="topic_id" value="{{ topic.id }}">
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="text" name="doubt_text" class="form-input" placeholder="Have a doubt? Log it here..." style="font-size: 0.84rem; padding: 0.45rem 0.75rem;" required>
+              <button type="submit" class="btn btn-sm btn-outline" style="flex-shrink: 0;">Add</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 4. Mistakes Log for This Topic -->
+        <div class="card" style="margin-top: 1.5rem;">
+          <div class="card-title" style="font-size: 0.95rem; margin-bottom: 0.75rem;">
+            ⚠️ Logged Mistakes ({{ mistakes|length }})
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            {% for mistake in mistakes %}
+              <div class="mistake-item">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem;">
+                  <span class="badge badge-danger" style="font-size: 0.65rem;">{{ mistake.get_error_type_display }}</span>
+                  <small style="font-size: 0.7rem; color: var(--text-muted);">{{ mistake.created_at|date:"M d" }}</small>
+                </div>
+                <div style="font-size: 0.84rem; font-weight: 600; color: var(--text-primary);">
+                  {{ mistake.mistake_description }}
+                </div>
+                <div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                  <strong>Fix:</strong> {{ mistake.correction_or_lesson }}
+                </div>
+              </div>
+            {% empty %}
+              <div style="font-size: 0.8rem; color: var(--text-muted);">No mistakes logged for this topic yet.</div>
+            {% endfor %}
+          </div>
+
+          <a href="{% url 'memory:mistakes_list' %}" class="btn btn-sm btn-outline btn-block">
+            + Log a Practice Mistake
+          </a>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/topic_memory.js' %}"></script>
+{% endblock %}

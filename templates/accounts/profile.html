@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile & Learning Preferences — LearningHub{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 2.5rem; padding-bottom: 4rem; max-width: 800px;">
+
+  <!-- Profile Header -->
+  <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem;">
+    <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--brand-primary), #818cf8); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800;">
+      {{ user.username|make_list|first|upper }}
+    </div>
+    <div>
+      <h1 style="font-size: 2rem; margin-bottom: 0.25rem;">{{ profile.full_name|default:user.username }}</h1>
+      <div style="font-size: 0.92rem; color: var(--text-secondary);">
+        @{{ user.username }} • Member since {{ user.date_joined|date:"M Y" }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Strip -->
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2.5rem;">
+    <div class="card" style="text-align: center; padding: 1.25rem;">
+      <div style="font-size: 1.75rem; font-weight: 800; color: #d97706;">🔥 {{ profile.current_streak }}d</div>
+      <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Current Streak</div>
+    </div>
+    <div class="card" style="text-align: center; padding: 1.25rem;">
+      <div style="font-size: 1.75rem; font-weight: 800; color: var(--brand-primary);">{{ stats.completed_topics_count }}</div>
+      <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Topics Completed</div>
+    </div>
+    <div class="card" style="text-align: center; padding: 1.25rem;">
+      <div style="font-size: 1.75rem; font-weight: 800; color: var(--accent-emerald);">{{ stats.solved_practice_count }}</div>
+      <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Challenges Solved</div>
+    </div>
+  </div>
+
+  <!-- Profile Settings Form -->
+  <div class="card" style="border-radius: var(--radius-xl); padding: 2rem;">
+    <h2 style="font-size: 1.35rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
+      ⚙️ Learning Goals & Settings
+    </h2>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="id_full_name">Display Name</label>
+        {{ form.full_name }}
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label" for="id_primary_goal">Primary Python Goal</label>
+          {{ form.primary_goal }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="id_daily_goal_minutes">Daily Target (Minutes)</label>
+          {{ form.daily_goal_minutes }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_experience_level">Coding Experience Level</label>
+        {{ form.experience_level }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_bio">Bio & What You Want to Build</label>
+        {{ form.bio }}
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">
+        Save Profile Preferences
+      </button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

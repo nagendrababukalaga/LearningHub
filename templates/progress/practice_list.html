@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Coding Practice Tracker — LearningHub{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
+    <div>
+      <div style="font-size: 0.82rem; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem;">
+        ACTIVE CODING
+      </div>
+      <h1 style="font-size: 2.25rem; margin-bottom: 0.5rem;">💻 Python Practice Tracker</h1>
+      <p style="font-size: 1rem; color: var(--text-secondary); max-width: 650px;">
+        Curated coding challenges mapped to every single topic in the curriculum. Write code, test edge cases, and reflect on solutions.
+      </p>
+    </div>
+
+    <!-- Progress Pill -->
+    <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 0.85rem 1.25rem; text-align: right;">
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Problems Mastered</div>
+      <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent-emerald);">
+        {{ solved_count }} <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">/ {{ total_count }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <form method="GET" class="card" style="padding: 1rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <label style="font-size: 0.85rem; font-weight: 600;">Topic:</label>
+        <select name="topic" class="form-select" style="font-size: 0.85rem; padding: 0.4rem 0.75rem; width: auto;" onchange="this.form.submit()">
+          <option value="">All Topics</option>
+          {% for t in topics %}
+            <option value="{{ t.id }}" {% if selected_topic_id == t.id %}selected{% endif %}>
+              L{{ t.level.level_number }}: {{ t.title }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <label style="font-size: 0.85rem; font-weight: 600;">Difficulty:</label>
+        <select name="difficulty" class="form-select" style="font-size: 0.85rem; padding: 0.4rem 0.75rem; width: auto;" onchange="this.form.submit()">
+          <option value="all" {% if selected_difficulty == 'all' %}selected{% endif %}>All Difficulties</option>
+          <option value="easy" {% if selected_difficulty == 'easy' %}selected{% endif %}>Easy</option>
+          <option value="medium" {% if selected_difficulty == 'medium' %}selected{% endif %}>Medium</option>
+          <option value="hard" {% if selected_difficulty == 'hard' %}selected{% endif %}>Hard</option>
+        </select>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <label style="font-size: 0.85rem; font-weight: 600;">Status:</label>
+        <select name="status" class="form-select" style="font-size: 0.85rem; padding: 0.4rem 0.75rem; width: auto;" onchange="this.form.submit()">
+          <option value="all" {% if selected_status == 'all' %}selected{% endif %}>All</option>
+          <option value="solved" {% if selected_status == 'solved' %}selected{% endif %}>Solved</option>
+          <option value="not_started" {% if selected_status == 'not_started' %}selected{% endif %}>Not Solved</option>
+        </select>
+      </div>
+    </div>
+
+    {% if selected_topic_id or selected_difficulty != 'all' or selected_status != 'all' %}
+      <a href="{% url 'progress:practice_list' %}" style="font-size: 0.82rem; color: var(--text-muted);">✕ Clear Filters</a>
+    {% endif %}
+  </form>
+
+  <!-- Problem Cards Grid -->
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    {% for item in problem_cards %}
+      <div class="card" id="prob-{{ item.problem.id }}" style="border-left: 4px solid {% if item.status == 'solved' %}var(--accent-emerald){% else %}var(--brand-primary){% endif %}; padding: 1.75rem;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+              <span class="badge badge-{{ item.problem.difficulty }}">{{ item.problem.get_difficulty_display }}</span>
+              <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">
+                Level {{ item.problem.topic.level.level_number }}: {{ item.problem.topic.title }}
+              </span>
+            </div>
+            <h3 style="font-size: 1.2rem; color: var(--text-primary);">{{ item.problem.title }}</h3>
+          </div>
+
+          <div>
+            {% if item.status == 'solved' %}
+              <span class="badge badge-beginner">✓ Solved</span>
+            {% else %}
+              <span class="badge badge-neutral">Pending Attempt</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Problem Prompt -->
+        <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.25rem;">
+          {{ item.problem.prompt_description }}
+        </p>
+
+        <!-- Solution & Code Reflection Form -->
+        <div style="background: var(--bg-surface-subtle); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1rem;">
+          <form class="practice-submission-form" data-problem-id="{{ item.problem.id }}">
+            {% csrf_token %}
+            
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label class="form-label" style="font-size: 0.82rem; display: flex; justify-content: space-between;">
+                <span>Your Python Solution:</span>
+                {% if item.problem.solution_hint %}
+                  <button type="button" class="btn-ghost" style="font-size: 0.75rem; color: var(--brand-primary); cursor: pointer;" onclick="document.getElementById('hint-{{ item.problem.id }}').style.display='block';">
+                    💡 View Hint
+                  </button>
+                {% endif %}
+              </label>
+
+              {% if item.problem.solution_hint %}
+                <div id="hint-{{ item.problem.id }}" style="display: none; background: rgba(37, 99, 235, 0.08); border-left: 3px solid var(--brand-primary); padding: 0.5rem 0.75rem; font-size: 0.8rem; border-radius: 4px; margin-bottom: 0.5rem; color: var(--text-primary);">
+                  <strong>Hint:</strong> {{ item.problem.solution_hint }}
+                </div>
+              {% endif %}
+
+              <textarea class="form-textarea" name="solution_code" style="font-family: var(--font-mono); font-size: 0.88rem; min-height: 100px;" placeholder="# Write your Python solution code here...">{{ item.attempt.my_solution_code|default:item.problem.starter_code }}</textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label class="form-label" style="font-size: 0.82rem;">Reflection / Takeaways from this problem:</label>
+              <input type="text" name="reflection_notes" class="form-input" value="{{ item.attempt.reflection_notes|default:'' }}" placeholder="e.g. Learned how tuple unpacking swaps variables in O(1) time without extra memory..." style="font-size: 0.85rem;">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <label style="font-size: 0.8rem; font-weight: 600;">Status:</label>
+                <select name="status" class="form-select" style="font-size: 0.8rem; padding: 0.25rem 0.5rem; width: auto;">
+                  <option value="not_started" {% if item.status == 'not_started' %}selected{% endif %}>Not Started</option>
+                  <option value="in_progress" {% if item.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                  <option value="solved" {% if item.status == 'solved' %}selected{% endif %}>Solved ✓</option>
+                </select>
+              </div>
+
+              <button type="button" class="btn btn-sm btn-primary save-practice-btn" data-problem-id="{{ item.problem.id }}">
+                💾 Save Submission
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+          <a href="{% url 'learning:topic_detail' item.problem.topic.slug %}" class="btn btn-sm btn-ghost" style="font-size: 0.8rem;">
+            📖 Review Topic Concept →
+          </a>
+        </div>
+
+      </div>
+    {% empty %}
+      <div class="card" style="text-align: center; padding: 3rem 1.5rem;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🔍</div>
+        <h3>No practice problems match your filter</h3>
+        <a href="{% url 'progress:practice_list' %}" class="btn btn-sm btn-outline" style="margin-top: 1rem;">Reset Filters</a>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.save-practice-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const probId = btn.getAttribute('data-problem-id');
+    const form = document.querySelector(`.practice-submission-form[data-problem-id="${probId}"]`);
+    if (!form) return;
+
+    btn.disabled = true;
+    btn.innerText = 'Saving...';
+
+    const formData = new FormData(form);
+
+    fetch(`/progress/practice/${probId}/submit/`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken'),
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      btn.disabled = false;
+      btn.innerText = 'Saved ✓';
+      btn.classList.remove('btn-primary');
+      btn.classList.add('btn-success');
+      setTimeout(() => {
+        btn.innerText = '💾 Save Submission';
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-primary');
+      }, 2000);
+    })
+    .catch(err => {
+      btn.disabled = false;
+      btn.innerText = 'Error';
+    });
+  });
+});
+</script>
+{% endblock %}

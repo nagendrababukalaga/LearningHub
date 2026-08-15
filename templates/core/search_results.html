@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search Results for "{{ query }}" — LearningHub{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+
+  <!-- Search Input Bar -->
+  <div style="max-width: 680px; margin: 0 auto 3rem;">
+    <form action="{% url 'core:search' %}" method="GET">
+      <div style="display: flex; gap: 0.5rem;">
+        <input type="text" name="q" value="{{ query }}" class="form-input" placeholder="Search Python topics, practice exercises, or mentor articles..." style="font-size: 1rem; padding: 0.85rem 1.25rem;" autofocus>
+        <button type="submit" class="btn btn-primary" style="padding: 0.85rem 1.5rem;">
+          Search
+        </button>
+      </div>
+    </form>
+    {% if query %}
+      <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.75rem; text-align: center;">
+        Found <strong>{{ total_results }}</strong> result{{ total_results|pluralize }} for "<em>{{ query }}</em>"
+      </div>
+    {% endif %}
+  </div>
+
+  {% if query %}
+    <!-- 1. Topics Results -->
+    {% if topics %}
+      <div style="margin-bottom: 3rem;">
+        <h2 style="font-size: 1.35rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.4rem;">
+          <span>🐍</span> Topics ({{ topics|length }})
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;">
+          {% for t in topics %}
+            <a href="{% url 'learning:topic_detail' t.slug %}" class="card card-hover" style="padding: 1.25rem; text-decoration: none;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+                <span class="badge badge-neutral">Level {{ t.level.level_number }}</span>
+                <span class="badge badge-{{ t.difficulty }}">{{ t.get_difficulty_display }}</span>
+              </div>
+              <h3 style="font-size: 1.05rem; color: var(--text-primary); margin-bottom: 0.25rem;">{{ t.title }}</h3>
+              <p style="font-size: 0.82rem; color: var(--text-secondary);">{{ t.summary_content|truncatewords:15 }}</p>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- 2. Practice Exercises -->
+    {% if practice_problems %}
+      <div style="margin-bottom: 3rem;">
+        <h2 style="font-size: 1.35rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.4rem;">
+          <span>💻</span> Practice Challenges ({{ practice_problems|length }})
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;">
+          {% for p in practice_problems %}
+            <a href="{% url 'progress:practice_list' %}?topic={{ p.topic.id }}" class="card card-hover" style="padding: 1.25rem; text-decoration: none;">
+              <span class="badge badge-{{ p.difficulty }}" style="margin-bottom: 0.4rem;">{{ p.get_difficulty_display }}</span>
+              <h3 style="font-size: 1.05rem; color: var(--text-primary); margin-bottom: 0.25rem;">{{ p.title }}</h3>
+              <p style="font-size: 0.82rem; color: var(--text-secondary);">{{ p.prompt_description|truncatewords:15 }}</p>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- 3. Mentor Guides -->
+    {% if articles %}
+      <div style="margin-bottom: 3rem;">
+        <h2 style="font-size: 1.35rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.4rem;">
+          <span>🧭</span> Mentor Guides ({{ articles|length }})
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;">
+          {% for art in articles %}
+            <a href="{% url 'guidance:article_detail' art.slug %}" class="card card-hover" style="padding: 1.25rem; text-decoration: none;">
+              <span class="badge badge-intermediate" style="margin-bottom: 0.4rem;">{{ art.get_category_display }}</span>
+              <h3 style="font-size: 1.05rem; color: var(--text-primary); margin-bottom: 0.25rem;">{{ art.title }}</h3>
+              <p style="font-size: 0.82rem; color: var(--text-secondary);">{{ art.summary|truncatewords:15 }}</p>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if total_results == 0 %}
+      <div class="card" style="text-align: center; padding: 3rem 1.5rem; max-width: 500px; margin: 0 auto;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔍</div>
+        <h3>No matches found</h3>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-top: 0.25rem;">
+          Try searching for keywords like "loops", "variables", "functions", "dictionaries", or "classes".
+        </p>
+      </div>
+    {% endif %}
+  {% endif %}
+
+</div>
+{% endblock %}

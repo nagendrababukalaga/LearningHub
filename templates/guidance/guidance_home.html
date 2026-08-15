@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mentor Guidance & Engineering Strategies — LearningHub{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+
+  <!-- Header -->
+  <div style="text-align: center; max-width: 760px; margin: 0 auto 3rem;">
+    <div style="font-size: 0.82rem; font-weight: 800; color: var(--brand-primary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem;">
+      SENIOR ENGINEER ROADMAPS
+    </div>
+    <h1 style="font-size: 2.5rem; margin-bottom: 0.75rem;">🧭 Mentor Guidance & Strategy</h1>
+    <p style="font-size: 1.1rem; color: var(--text-secondary);">
+      Actionable advice from senior Python engineers on escaping tutorial hell, mastering debugging, preparing for internship interviews, and building real portfolio projects.
+    </p>
+  </div>
+
+  <!-- Category Filter Tabs -->
+  <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
+    <a href="?category=all" class="btn btn-sm {% if selected_category == 'all' %}btn-primary{% else %}btn-secondary{% endif %}">
+      All Guides
+    </a>
+    {% for code, label in categories %}
+      <a href="?category={{ code }}" class="btn btn-sm {% if selected_category == code %}btn-primary{% else %}btn-secondary{% endif %}">
+        {{ label }}
+      </a>
+    {% endfor %}
+  </div>
+
+  <!-- Articles Grid -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 3.5rem;">
+    {% for art in articles %}
+      <a href="{% url 'guidance:article_detail' art.slug %}" class="card card-hover" style="border-radius: var(--radius-xl); padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none;">
+        
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span class="badge badge-intermediate">{{ art.get_category_display }}</span>
+            <small style="font-size: 0.75rem; color: var(--text-muted);">⏱️ {{ art.read_time_minutes }} min read</small>
+          </div>
+
+          <h3 style="font-size: 1.25rem; color: var(--text-primary); margin-bottom: 0.6rem; line-height: 1.35;">
+            {{ art.title }}
+          </h3>
+
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+            {{ art.summary }}
+          </p>
+        </div>
+
+        <div style="margin-top: 1.25rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem;">
+          <span style="color: var(--text-muted);">By {{ art.author_name }}</span>
+          <span style="color: var(--brand-primary); font-weight: 600;">Read Guide →</span>
+        </div>
+
+      </a>
+    {% endfor %}
+  </div>
+
+  <!-- Senior Engineer Daily Wisdom Tips -->
+  <div style="border-top: 1px solid var(--border-subtle); padding-top: 3rem;">
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <h2 style="font-size: 1.75rem; margin-bottom: 0.35rem;">💡 Daily Engineering Wisdom</h2>
+      <p style="font-size: 0.95rem; color: var(--text-secondary);">Bite-sized mental models to keep in mind while coding.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+      {% for tip in tips %}
+        <div class="card" style="background: var(--bg-surface-subtle); border-radius: var(--radius-lg); padding: 1.25rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+            <span style="font-size: 1.1rem;">💡</span>
+            <strong style="font-size: 0.92rem; color: var(--text-primary);">{{ tip.title }}</strong>
+          </div>
+          <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.55;">
+            {{ tip.short_tip }}
+          </p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

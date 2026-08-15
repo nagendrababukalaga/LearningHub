@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Saved Bookmarks — LearningHub{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+
+  <div style="margin-bottom: 2.5rem;">
+    <div style="font-size: 0.82rem; font-weight: 800; color: var(--brand-primary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem;">
+      RESOURCE REPOSITORY
+    </div>
+    <h1 style="font-size: 2.25rem; margin-bottom: 0.5rem;">🔖 Saved Bookmarks</h1>
+    <p style="font-size: 1rem; color: var(--text-secondary);">
+      Curated tutorials, official docs, and practice links you've bookmarked for future reference.
+    </p>
+  </div>
+
+  {% if bookmarks %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.25rem;">
+      {% for b in bookmarks %}
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 1.5rem;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="badge badge-neutral">{{ b.resource.get_resource_type_display }}</span>
+              <a href="{% url 'learning:toggle_bookmark' b.resource.id %}" style="font-size: 0.8rem; color: var(--accent-rose); text-decoration: none;" title="Remove bookmark">
+                ✕ Remove
+              </a>
+            </div>
+
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.35rem;">
+              <a href="{{ b.resource.url }}" target="_blank" rel="noopener noreferrer" style="color: var(--text-primary);">
+                {{ b.resource.title }} ↗
+              </a>
+            </h3>
+
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              Source: {{ b.resource.author_or_source }} • {{ b.resource.duration_or_read_time }}
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem;">
+            <a href="{% url 'learning:topic_detail' b.resource.topic.slug %}" style="font-weight: 600;">
+              Level {{ b.resource.topic.level.level_number }}: {{ b.resource.topic.title }}
+            </a>
+            <a href="{{ b.resource.url }}" target="_blank" class="btn btn-sm btn-outline" style="font-size: 0.75rem;">
+              Open Link ↗
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem; max-width: 540px; margin: 0 auto;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🔖</div>
+      <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">No Bookmarks Saved Yet</h2>
+      <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+        When browsing any Python topic, click the <strong>"Bookmark"</strong> button next to videos and documentation to save them here.
+      </p>
+      <a href="{% url 'learning:path_overview' %}" class="btn btn-primary">
+        Explore Python Curriculum →
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

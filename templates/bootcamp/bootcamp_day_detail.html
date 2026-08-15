@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Day {{ day.day_number }}: {{ day.title }} — Python Bootcamp — LearningHub{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 2rem; padding-bottom: 4rem;">
+
+  <!-- Breadcrumb & Day Navigation -->
+  <div style="margin-bottom: 1.5rem;">
+    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+      <a href="{% url 'bootcamp:index' %}">30-Day Python Bootcamp</a>
+      <span>›</span>
+      <span style="color: var(--text-primary); font-weight: 600;">Day {{ day.day_number }}: {{ day.title }}</span>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span class="badge badge-beginner" style="margin-bottom: 0.35rem;">DAY {{ day.day_number }} OF 30</span>
+        <h1 style="font-size: 2.25rem;">{{ day.title }}</h1>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        {% if user.is_authenticated %}
+          <form action="{% url 'bootcamp:toggle_day_complete' day.day_number %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn {% if user_progress.is_completed %}btn-success{% else %}btn-outline{% endif %}">
+              {% if user_progress.is_completed %}✓ Day {{ day.day_number }} Completed{% else %}Mark Day Complete{% endif %}
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Day Navigation Bar -->
+  <div class="topic-nav-bar" style="margin-bottom: 2rem;">
+    <div>
+      {% if prev_day %}
+        <a href="{% url 'bootcamp:day_detail' prev_day.day_number %}" class="btn btn-sm btn-ghost">
+          ← Day {{ prev_day.day_number }}: {{ prev_day.title }}
+        </a>
+      {% else %}
+        <span style="font-size: 0.82rem; color: var(--text-muted);">Day 1 (Kickoff)</span>
+      {% endif %}
+    </div>
+
+    <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">
+      Estimated Time: {{ day.estimated_minutes }} mins
+    </div>
+
+    <div>
+      {% if next_day %}
+        <a href="{% url 'bootcamp:day_detail' next_day.day_number %}" class="btn btn-sm btn-primary">
+          Day {{ next_day.day_number }}: {{ next_day.title }} →
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Day Content Grid -->
+  <div style="display: grid; grid-template-columns: 1.85fr 1fr; gap: 2rem; align-items: start;">
+    
+    <!-- Left Column: Summary, Goals, and Assignment -->
+    <div>
+      
+      <!-- Concept Summary -->
+      <div class="card" style="margin-bottom: 1.5rem; padding: 1.75rem;">
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem;">📖 Concept Overview</h3>
+        <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.7;">
+          {{ day.concept_summary }}
+        </p>
+      </div>
+
+      <!-- Learning Goals Checklist -->
+      <div class="objectives-card" style="margin-bottom: 1.5rem;">
+        <h3>🎯 Today's Learning Goals</h3>
+        <ul class="objectives-list">
+          {% for goal in day.get_goals_list %}
+            <li>{{ goal }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Coding Assignment -->
+      <div class="card" style="border-left: 4px solid var(--accent-emerald); padding: 1.75rem; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.75rem;">
+          💻 Today's Practical Assignment
+        </h3>
+        <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+          {{ day.practice_assignment }}
+        </p>
+
+        {% if day.code_starter %}
+          <div class="code-viewer-block">
+            <div class="code-header">
+              <span class="code-lang-tag">python</span>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <pre><code>{{ day.code_starter }}</code></pre>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if day.topic_ref %}
+        <div class="card" style="background: var(--bg-surface-subtle); padding: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Linked Curriculum Topic</span>
+            <div style="font-weight: 700; font-size: 0.95rem; margin-top: 0.2rem;">{{ day.topic_ref.title }}</div>
+          </div>
+          <a href="{% url 'learning:topic_detail' day.topic_ref.slug %}" class="btn btn-sm btn-outline">
+            Open Full Topic Breakdown →
+          </a>
+        </div>
+      {% endif %}
+
+    </div>
+
+    <!-- Right Column: Submission & Reflection Notes -->
+    <div>
+      <div class="card" style="position: sticky; top: 5.5rem;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;">📝 Day {{ day.day_number }} Reflection</h3>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Record what you built today, bugs you conquered, and key insights.
+        </p>
+
+        {% if user.is_authenticated %}
+          <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+              <label class="form-label" for="id_submission_notes">My Daily Notes & Code Link:</label>
+              <textarea name="submission_notes" id="id_submission_notes" class="form-textarea" placeholder="e.g. Completed the string slicing exercises. Understood why [::-1] reverses strings in O(N) time...">{{ user_progress.submission_notes }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              💾 Save Reflection
+            </button>
+          </form>
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-block">Log in to track progress</a>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Python 30-Day Intensive Bootcamp — LearningHub{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+
+  <!-- Bootcamp Header -->
+  <div style="text-align: center; max-width: 800px; margin: 0 auto 3rem;">
+    <div style="font-size: 0.82rem; font-weight: 800; color: var(--accent-emerald); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem;">
+      30-DAY ZERO-TO-PROJECTS ROADMAP
+    </div>
+    <h1 style="font-size: 2.5rem; margin-bottom: 0.75rem;">🚀 Python 30-Day Intensive Bootcamp</h1>
+    <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+      Build unstoppable daily consistency. 30 bite-sized milestones taking you from hello world to writing object-oriented software and REST APIs.
+    </p>
+
+    <!-- Overall Bootcamp Progress -->
+    <div class="card" style="max-width: 480px; margin: 0 auto; padding: 1.25rem 1.5rem; text-align: left;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <strong style="font-size: 0.95rem;">Bootcamp Progress</strong>
+        <span class="badge badge-beginner">{{ completed_count }} of {{ total_days }} Days ({{ progress_pct }}%)</span>
+      </div>
+      <div class="progress-bar-track lg">
+        <div class="progress-bar-fill" style="width: {{ progress_pct }}%; background: var(--accent-emerald);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 30 Days Grid Grouped by Weeks -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+    {% for item in days_data %}
+      <a href="{% url 'bootcamp:day_detail' item.day.day_number %}" class="card card-hover" style="border-radius: var(--radius-lg); padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; border-color: {% if item.is_completed %}rgba(16, 185, 129, 0.4){% else %}var(--border-subtle){% endif %};">
+        
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+            <span style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: var(--brand-primary);">
+              DAY {{ item.day.day_number }} • WEEK {{ item.week_number }}
+            </span>
+            {% if item.is_completed %}
+              <span class="badge badge-beginner">✓ Completed</span>
+            {% else %}
+              <span class="badge badge-neutral">⏱️ {{ item.day.estimated_minutes }}m</span>
+            {% endif %}
+          </div>
+
+          <h3 style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.4rem;">
+            {{ item.day.title }}
+          </h3>
+
+          <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+            {{ item.day.concept_summary|truncatewords:18 }}
+          </p>
+        </div>
+
+        <div style="margin-top: 1rem; border-top: 1px solid var(--border-subtle); padding-top: 0.65rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+          <span style="color: var(--text-muted);">
+            {% if item.day.topic_ref %}L{{ item.day.topic_ref.level.level_number }}: {{ item.day.topic_ref.title }}{% endif %}
+          </span>
+          <span style="color: var(--brand-primary); font-weight: 600;">Open Day {{ item.day.day_number }} →</span>
+        </div>
+
+      </a>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

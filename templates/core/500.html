@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Server Error (500) — LearningHub{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 5rem; padding-bottom: 5rem; text-align: center; max-width: 580px;">
+  <div class="card" style="padding: 3rem 2rem; border-radius: var(--radius-xl);">
+    <div style="font-size: 3.5rem; margin-bottom: 1rem;">⚙️</div>
+    <h1 style="font-size: 2.25rem; margin-bottom: 0.5rem;">500 — System Error</h1>
+    <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem;">
+      An unexpected error occurred. Our team has logged the issue. Please return to the dashboard.
+    </p>
+    <a href="{% url 'core:landing' %}" class="btn btn-primary">Return to Safety →</a>
+  </div>
+</div>
+{% endblock %}

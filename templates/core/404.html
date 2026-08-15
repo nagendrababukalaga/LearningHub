@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Page Not Found (404) — LearningHub{% endblock %}
+
+{% block content %}
+<div class="app-container" style="padding-top: 5rem; padding-bottom: 5rem; text-align: center; max-width: 580px;">
+  <div class="card" style="padding: 3rem 2rem; border-radius: var(--radius-xl);">
+    <div style="font-size: 3.5rem; margin-bottom: 1rem;">🐍</div>
+    <h1 style="font-size: 2.25rem; margin-bottom: 0.5rem;">404 — Topic Not Found</h1>
+    <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem;">
+      The learning page you are looking for does not exist or has been moved. Let's get you back on track!
+    </p>
+    <div style="display: flex; justify-content: center; gap: 1rem;">
+      <a href="{% url 'core:landing' %}" class="btn btn-outline">Home</a>
+      <a href="{% url 'learning:path_overview' %}" class="btn btn-primary">Explore Python Path →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
