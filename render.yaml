@@ -2,7 +2,7 @@ services:
   - type: web
     name: learninghub
     runtime: python
-    buildCommand: "./build.sh"
+    buildCommand: "chmod +x build.sh && ./build.sh"
     startCommand: "gunicorn learninghub.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
