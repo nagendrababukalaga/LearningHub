@@ -3,7 +3,7 @@ services:
     name: learninghub
     runtime: python
     buildCommand: "chmod +x build.sh && ./build.sh"
-    startCommand: "gunicorn learninghub.wsgi:application"
+    startCommand: "python manage.py migrate --noinput && python manage.py seed_learninghub && gunicorn learninghub.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
