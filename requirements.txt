@@ -1,0 +1,18 @@
+# Core Framework
+Django>=5.2.0,<6.0.0
+asgiref>=3.8.1
+sqlparse>=0.5.0
+tzdata>=2026.1
+
+# Environment and HTTP
+python-dotenv>=1.0.1
+requests>=2.31.0
+
+# Production Web Server & Static Files for Render
+gunicorn>=22.0.0
+uvicorn>=0.30.0
+whitenoise>=6.6.0
+
+# Production Database (PostgreSQL on Render)
+dj-database-url>=2.1.0
+psycopg2-binary>=2.9.9
